@@ -1,19 +1,45 @@
 import Button from '../reusable/Button';
 import FormInput from '../reusable/FormInput';
+import { useState } from 'react';
 
 const ContactForm = () => {
+	const [result, setResult] = useState("");
+
+	const handleFormSubmit = async (event) => {
+		event.preventDefault();
+		setResult("Sending....");
+		const formData = new FormData(event.target);
+	
+		formData.append("access_key", "1e38f9db-eca6-4656-9799-d53c8fdbdf1b");
+	
+		const response = await fetch("https://api.web3forms.com/submit", {
+		  method: "POST",
+		  body: formData
+		});
+	
+		const data = await response.json();
+	
+		if (data.success) {
+		  setResult("Form Submitted Successfully");
+		  alert("Form Submitted Successfully");
+		  event.target.reset();
+		} else {
+		  console.log("Error", data);
+		  setResult(data.message);
+		}
+	  };
+
 	return (
 		<div className="w-full lg:w-1/2">
 			<div className="leading-loose">
 				<form
-					onSubmit={(e) => {
-						e.preventDefault();
-					}}
+					onSubmit={handleFormSubmit}
 					className="max-w-xl m-4 p-6 sm:p-10 bg-secondary-light dark:bg-secondary-dark rounded-xl shadow-xl text-left"
 				>
 					<p className="font-general-medium text-primary-dark dark:text-primary-light text-2xl mb-8">
 						Contact Form
 					</p>
+					<input type="hidden" name="access_key" value="1e38f9db-eca6-4656-9799-d53c8fdbdf1b"></input>
 					<FormInput
 						inputLabel="Full Name"
 						labelFor="name"
@@ -67,6 +93,7 @@ const ContactForm = () => {
 						/>
 					</div>
 				</form>
+				<span>{result}</span>
 			</div>
 		</div>
 	);
